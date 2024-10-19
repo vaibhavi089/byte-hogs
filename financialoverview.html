@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer Financial Overview</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #000;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            font-size: 18px; /* Increased font size for better readability */
+            background: url('https://example.com/path-to-your-image.jpg') no-repeat center center fixed; /* Add your background image URL here */
+            background-size: cover;
+        }
+        .overlay {
+            background-color: rgba(255, 255, 255, 0.8); /* Light white overlay with opacity */
+            padding: 20px;
+            border-radius: 10px; /* Optional: rounded corners */
+        }
+        h2 {
+            text-align: center;
+            color: #000;
+            margin-bottom: 20px; /* Space below the heading */
+            font-size: 28px; /* Increased font size for heading */
+            text-decoration: underline; /* Underline effect */
+        }
+        h3 {
+            color: #2980b9; /* Blue color for subheadings */
+            border-bottom: 1px solid #2980b9; /* Optional underline for subheadings */
+            padding-bottom: 5px; /* Space below the subheading */
+            font-size: 24px; /* Increased font size for subheading */
+        }
+        .input_field {
+            margin-bottom: 15px;
+        }
+        .input_field input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #000;
+            background-color: #fff;
+            color: #000;
+            font-size: 18px; /* Increased font size for inputs */
+        }
+        .button {
+            width: 100%;
+            padding: 10px;
+            background-color: #000;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 18px; /* Increased font size for button */
+        }
+        .button:hover {
+            background-color: #333;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #000;
+        }
+        .chart-container {
+            position: relative;
+            margin-top: 20px;
+            width: 100%;
+            height: 400px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="overlay">
+    <h2>Farmer Financial Overview</h2>
+
+    <h3>Income</h3>
+    <div class="input_field">
+        <input type="number" id="cropIncome" placeholder="Crop Sales(Rs) " required />
+    </div>
+    <div class="input_field">
+        <input type="number" id="livestockIncome" placeholder="Livestock Sales(Rs) " required />
+    </div>
+    <div class="input_field">
+        <input type="number" id="governmentGrants" placeholder="Government Grants(Rs) " required />
+    </div>
+    <div class="input_field">
+        <input type="number" id="otherIncome" placeholder="Other Income(Rs)" required />
+    </div>
+
+    <h3>Expenses</h3>
+    <div class="input_field">
+        <input type="number" id="inputCosts" placeholder="Input Costs(Rs)" required />
+    </div>
+    <div class="input_field">
+        <input type="number" id="laborCosts" placeholder="Labor Costs(Rs) " required />
+    </div>
+    <div class="input_field">
+        <input type="number" id="equipmentCosts" placeholder="Equipment Costs(Rs) " required />
+    </div>
+    <div class="input_field">
+        <input type="number" id="landCosts" placeholder="Land Costs(Rs) " required />
+    </div>
+    <div class="input_field">
+        <input type="number" id="utilitiesCosts" placeholder="Utilities Costs(Rs) " required />
+    </div>
+
+    <button class="button" onclick="calculateOverview()">Calculate Overview</button>
+    <button class="button" onclick="resetFields()">Reset</button>
+
+    <div class="result" id="result"></div>
+
+    <div class="chart-container">
+        <canvas id="financialChart"></canvas>
+    </div>
+</div>
+
+<script>
+    function calculateOverview() {
+        // Income calculations
+        const cropIncome = parseFloat(document.getElementById('cropIncome').value) || 0;
+        const livestockIncome = parseFloat(document.getElementById('livestockIncome').value) || 0;
+        const governmentGrants = parseFloat(document.getElementById('governmentGrants').value) || 0;
+        const otherIncome = parseFloat(document.getElementById('otherIncome').value) || 0;
+        const totalIncome = cropIncome + livestockIncome + governmentGrants + otherIncome;
+
+        // Expense calculations
+        const inputCosts = parseFloat(document.getElementById('inputCosts').value) || 0;
+        const laborCosts = parseFloat(document.getElementById('laborCosts').value) || 0;
+        const equipmentCosts = parseFloat(document.getElementById('equipmentCosts').value) || 0;
+        const landCosts = parseFloat(document.getElementById('landCosts').value) || 0;
+        const utilitiesCosts = parseFloat(document.getElementById('utilitiesCosts').value) || 0;
+        const totalExpenses = inputCosts + laborCosts + equipmentCosts + landCosts + utilitiesCosts;
+
+        // Profit calculation
+        const profit = totalIncome - totalExpenses;
+
+        // Display results
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = `
+            <h3>Financial Overview</h3>
+            <p><strong>Total Income:</strong> Rs${totalIncome.toFixed(2)}</p>
+            <p><strong>Total Expenses:</strong> Rs${totalExpenses.toFixed(2)}</p>
+            <p><strong>Profit/Loss:</strong> Rs${profit.toFixed(2)}</p>
+            <p style="color: ${profit >= 0 ? 'green' : 'red'};">
+                ${profit >= 0 ? 'Profit' : 'Loss'}
+            </p>
+        `;
+
+        // Update chart
+        updateChart(totalIncome, totalExpenses);
+    }
+
+    function resetFields() {
+        document.getElementById('cropIncome').value = '';
+        document.getElementById('livestockIncome').value = '';
+        document.getElementById('governmentGrants').value = '';
+        document.getElementById('otherIncome').value = '';
+        document.getElementById('inputCosts').value = '';
+        document.getElementById('laborCosts').value = '';
+        document.getElementById('equipmentCosts').value = '';
+        document.getElementById('landCosts').value = '';
+        document.getElementById('utilitiesCosts').value = '';
+        document.getElementById('result').innerHTML = '';
+        if (financialChart) {
+            financialChart.destroy(); // Destroy existing chart
+        }
+    }
+
+    let financialChart;
+    function updateChart(income, expenses) {
+        const ctx = document.getElementById('financialChart').getContext('2d');
+        
+        if (financialChart) {
+            financialChart.destroy(); // Destroy previous chart instance
+        }
+
+        financialChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Income', 'Expenses'],
+                datasets: [{
+                    label: 'Financial Overview',
+                    data: [income, expenses],
+                    backgroundColor: ['rgba(75, 192, 192, 0.6)', 'rgba(255, 99, 132, 0.6)'],
+                    borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Amount (Rs)'
+                        }
+                    }
+                }
+            }
+        });
+    }
+</script>
+
+</body>
+</html>
