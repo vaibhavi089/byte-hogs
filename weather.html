@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            margin-top: 50px;
+        }
+        #weather-result {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Weather App</h1>
+    <button id="get-weather">Get Weather for Current Location</button>
+
+    <div id="weather-result"></div>
+
+    <script>
+        const button = document.getElementById('get-weather');
+        const resultDiv = document.getElementById('weather-result');
+        const apiKey = 'b7ae37dac4adba6f4a9c7b69aac57764'; // Replace with your OpenWeatherMap API key
+
+        button.addEventListener('click', () => {
+            // Check if Geolocation is available
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(async (position) => {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+                    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`;
+
+                    try {
+                        const response = await fetch(url);
+                        const data = await response.json();
+
+                        if (data.cod === 200) {
+                            // Display weather result
+                            resultDiv.innerHTML = `
+                                <h2>Weather in ${data.name}</h2>
+                                <p>Temperature: ${data.main.temp}°C</p>
+                                <p>Humidity: ${data.main.humidity}%</p>
+                                <p>Wind Speed: ${data.wind.speed} m/s</p>
+                                <p>Weather: ${data.weather[0].description}</p>
+                            `;
+                        } else {
+                            resultDiv.innerHTML = `<p>${data.message}</p>`;
+                        }
+                    } catch (error) {
+                        console.error(error);
+                        resultDiv.innerHTML = `<p>Failed to fetch weather data. Please try again later.</p>`;
+                    }
+                }, (error) => {
+                    resultDiv.innerHTML = `<p>Error: ${error.message}</p>`;
+                });
+            } else {
+                resultDiv.innerHTML = `<p>Geolocation is not supported by your browser.</p>`;
+            }
+        });
+    </script>
+</body>
+</html>
