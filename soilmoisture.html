@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Simulated Soil Moisture Monitor</title>
+</head>
+<body>
+    <h1>Simulated Soil Moisture Level</h1>
+    <p id="moisture-value">Loading...</p>
+    <script>
+        function simulateSoilMoisture() {
+            // Generate a random soil moisture value between 0 and 100
+            const moisture = Math.floor(Math.random() * 101); // 0 to 100%
+            document.getElementById('moisture-value').innerText = `Soil Moisture: ${moisture}%`;
+        }
+
+        // Update the moisture level every 2 seconds
+        setInterval(simulateSoilMoisture, 2000);
+    </script>
+</body>
+</html>
