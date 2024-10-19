@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Farm Monitoring Dashboard</title>
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        body {
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        .navbar {
+            background-color: #000;
+        }
+        .navbar-brand {
+            color: #fff;
+        }
+        .card {
+            margin: 15px;
+        }
+        .dashboard-title {
+            margin: 20px 0;
+            text-align: center;
+        }
+        footer {
+            background-color: #f0f0f0;
+            border-top: 1px solid #ddd;
+        }
+        .iframe-container {
+            position: relative;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            overflow: hidden;
+        }
+        .iframe-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .btn-custom {
+            width: 100%;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Smart Farm Monitoring</a>
+        </div>
+    </nav>
+
+    <!-- Main Dashboard -->
+    <div class="container mt-4">
+        <h2 class="dashboard-title">Farmer Dashboard</h2>
+        
+        <!-- Row 1: Weather and Soil Moisture -->
+        <div class="row">
+            <!-- Weather -->
+            <div class="col-md-6">
+                <div class="card text-center">
+                    <div class="card-header bg-dark text-white">Weather</div>
+                    <div class="card-body">
+                        <h5 class="card-title">Weather Summary</h5>
+                        <a href="weather.html" class="btn btn-secondary btn-custom">Go to Weather Page</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Soil Moisture -->
+            <div class="col-md-6">
+                <div class="card text-center">
+                    <div class="card-header bg-success text-white">Soil Moisture</div>
+                    <div id="soil-moisture" class="card-body">
+                        <h5 class="card-title">Live Soil Moisture Data</h5>
+                        <canvas id="moistureChart" class="mb-4"></canvas>
+                        <button id="get-soil-moisture" class="btn btn-success btn-custom">Get Soil Moisture</button>
+                        
+                        <!-- Wokwi Simulation for Soil Moisture -->
+                        <h5 class="mt-4">Soil Moisture Sensor Simulation</h5>
+                        <div class="iframe-container">
+                            <iframe src="https://wokwi.com/projects/412174368651350017" frameborder="0" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 2: IoT Sensors -->
+        <div class="row">
+            <div class="col-md-12">
+                <h5 class="mt-4">IoT Sensors</h5>
+                <div class="iframe-container">
+                    <iframe src="https://wokwi.com/projects/412113121415366657" frameborder="0" allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 3: Drip Irrigation -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card text-center">
+                    <div class="card-header bg-info text-white">Drip Irrigation Sensor Simulation</div>
+                    <div class="card-body">
+                        <h5 class="mt-4">Drip Irrigation Status: <span id="drip-irrigation-status">Inactive</span></h5>
+                        <div class="iframe-container">
+                            <iframe src="https://wokwi.com/projects/412170915084151809" frameborder="0" allowfullscreen></iframe>
+                        </div>
+                        <!-- Control Buttons for Drip Irrigation -->
+                        <button id="start-drip-irrigation" class="btn btn-success mt-3">Start Drip Irrigation</button>
+                        <button id="stop-drip-irrigation" class="btn btn-danger mt-3">Stop Drip Irrigation</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 4: Financial Overview -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card text-center">
+                    <div class="card-header bg-secondary text-white">Financial Overview</div>
+                    <div class="card-body">
+                        <h4 class="card-title">Income: <span id="total-income">₹0</span></h4>
+                        <h4 class="card-title">Expenses: <span id="total-expenses">₹0</span></h4>
+                        <h4 class="card-title">Balance: <span id="balance">₹0</span></h4>
+                        <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#financialModal">Update Financials</button>
+                        <canvas id="financialChart" class="mt-4"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Financial Update Modal -->
+        <div class="modal fade" id="financialModal" tabindex="-1" aria-labelledby="financialModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="financialModalLabel">Update Income and Expenses</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="income" class="form-label">Income</label>
+                            <input type="number" class="form-control" id="income" placeholder="Enter income">
+                        </div>
+                        <div class="mb-3">
+                            <label for="expenses" class="form-label">Expenses</label>
+                            <input type="number" class="form-control" id="expenses" placeholder="Enter expenses">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="calculate-financials">Calculate</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-center mt-5 py-3">
+        <p>&copy; 2024 Smart Farm Monitoring. All rights reserved.</p>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Soil Moisture Simulation
+        document.getElementById('get-soil-moisture').addEventListener('click', () => {
+            console.log('Fetching soil moisture data...');
+            const moistureData = Array.from({length: 5}, () => Math.floor(Math.random() * 100)); // Random data simulating real-time
+            updateMoistureChart(moistureData);
+        });
+
+        // Drip Irrigation Logic
+        
+
+        // Initialize Chart.js for Soil Moisture
+        const ctxMoisture = document.getElementById('moistureChart').getContext('2d');
+        const moistureChart = new Chart(ctxMoisture, {
+            type: 'line',
+            data: {
+                labels: ['1', '2', '3', '4', '5'],
+                datasets: [{
+                    label: 'Soil Moisture Level (%)',
+                    data: [0, 0, 0, 0, 0],
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2,
+                    fill: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
+        });
+
+        function updateMoistureChart(moistureData) {
+            moistureChart.data.datasets[0].data = moistureData;
+            moistureChart.update();
+        }
+
+        // Financial Calculation Logic
+        document.getElementById('calculate-financials').addEventListener('click', () => {
+            const income = parseFloat(document.getElementById('income').value) || 0;
+            const expenses = parseFloat(document.getElementById('expenses').value) || 0;
+            const balance = income - expenses;
+
+            document.getElementById('total-income').innerText = `₹${income.toFixed(2)}`;
+            document.getElementById('total-expenses').innerText = `₹${expenses.toFixed(2)}`;
+            document.getElementById('balance').innerText = `₹${balance.toFixed(2)}`;
+
+            // Update Financial Chart
+            updateFinancialChart(income, expenses);
+
+            // Close the modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('financialModal'));
+            modal.hide();
+        });
+
+        // Initialize Chart.js for Financial Overview
+        const ctxFinancial = document.getElementById('financialChart').getContext('2d');
+        let financialChart = new Chart(ctxFinancial, {
+            type: 'bar',
+            data: {
+                labels: ['Income', 'Expenses'],
+                datasets: [{
+                    label: 'Financial Overview',
+                    data: [0, 0],
+                    backgroundColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        function updateFinancialChart(income, expenses) {
+            financialChart.data.datasets[0].data = [income, expenses];
+            financialChart.update();
+        }
+    </script>
+</body>
+</html>
